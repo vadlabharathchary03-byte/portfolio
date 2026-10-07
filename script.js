@@ -815,7 +815,7 @@ function initBackgroundCanvas() {
         }
 
         init(isFirst = false) {
-            const types = ["sphere", "cube", "octahedron", "torus", "capsule"];
+            const types = ["star", "pyramid", "sphere", "cylinder"];
             this.type = types[Math.floor(Math.random() * types.length)];
             this.palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
             
@@ -916,25 +916,23 @@ function initBackgroundCanvas() {
             this.drawDropShadow(s);
 
             switch (this.type) {
+                case "star":
+                    this.drawStar(s);
+                    break;
+                case "pyramid":
+                    this.drawPyramid(s);
+                    break;
                 case "sphere":
                     this.drawSphere(s);
                     break;
-                case "cube":
-                    this.drawCube(s);
-                    break;
-                case "octahedron":
-                    this.drawOctahedron(s);
-                    break;
-                case "torus":
-                    this.drawTorus(s);
-                    break;
-                case "capsule":
-                    this.drawCapsule(s);
+                case "cylinder":
+                    this.drawCylinder(s);
                     break;
             }
 
             ctx.restore();
         }
+
 
         drawDropShadow(s) {
             ctx.save();
@@ -952,6 +950,7 @@ function initBackgroundCanvas() {
             ctx.restore();
         }
 
+        /* --- 1. 3D SPHERE --- */
         drawSphere(s) {
             const lightOffX = -s * 0.32;
             const lightOffY = -s * 0.32;
@@ -966,58 +965,79 @@ function initBackgroundCanvas() {
             ctx.fillStyle = grad;
             ctx.fill();
 
-            // Specular highlight
+            // Specular sheen
             const specGrad = ctx.createRadialGradient(lightOffX, lightOffY, 0, lightOffX, lightOffY, s * 0.35);
             specGrad.addColorStop(0, "rgba(255, 255, 255, 0.85)");
-            specGrad.addColorStop(0.6, "rgba(255, 255, 255, 0.25)");
+            specGrad.addColorStop(0.6, "rgba(255, 255, 255, 0.2)");
             specGrad.addColorStop(1, "transparent");
             ctx.beginPath();
             ctx.arc(lightOffX, lightOffY, s * 0.35, 0, Math.PI * 2);
             ctx.fillStyle = specGrad;
             ctx.fill();
 
-            // Orbiting accent ring
-            ctx.save();
-            ctx.rotate(this.rz);
-            ctx.beginPath();
-            ctx.ellipse(0, 0, s * 1.45, s * 0.4, Math.PI / 4, 0, Math.PI * 2);
-            ctx.strokeStyle = this.palette.highlight;
-            ctx.lineWidth = Math.max(1.5, s * 0.08);
-            ctx.stroke();
-            ctx.restore();
+            // 3D Latitude / Longitude wireframe rings rotating in 3D
+            const numRings = 2;
+            for (let r = 0; r < numRings; r++) {
+                const angleOffset = (r * Math.PI) / numRings;
+                ctx.save();
+                ctx.rotate(this.rz + angleOffset);
+                ctx.beginPath();
+                ctx.ellipse(0, 0, s * 1.02, s * Math.abs(Math.sin(this.rx + angleOffset)) * 0.85 + 2, this.ry, 0, Math.PI * 2);
+                ctx.strokeStyle = this.palette.highlight;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+                ctx.restore();
+            }
         }
 
-        drawCube(s) {
-            const h = s * 0.82;
+        /* --- 2. 3D PYRAMID --- */
+        drawPyramid(s) {
+            const b = s * 0.82; // Base half-width
+            const h = s * 0.65; // Base Y
+            const apexY = -s * 0.95; // Apex pointing up
+
             const vertices = [
-                [-h, -h, -h], [h, -h, -h], [h, h, -h], [-h, h, -h],
-                [-h, -h,  h], [h, -h,  h], [h, h,  h], [-h, h,  h]
-            ];
-            const faces = [
-                { idx: [0, 1, 2, 3], norm: [0, 0, -1] },
-                { idx: [5, 4, 7, 6], norm: [0, 0, 1] },
-                { idx: [4, 0, 3, 7], norm: [-1, 0, 0] },
-                { idx: [1, 5, 6, 2], norm: [1, 0, 0] },
-                { idx: [4, 5, 1, 0], norm: [0, -1, 0] },
-                { idx: [3, 2, 6, 7], norm: [0, 1, 0] }
+                [-b, h, -b], // 0: back-left
+                [ b, h, -b], // 1: back-right
+                [ b, h,  b], // 2: front-right
+                [-b, h,  b], // 3: front-left
+                [ 0, apexY, 0] // 4: apex
             ];
 
-            const rotatedVerts = vertices.map(v => rotate3D(v, this.rx, this.ry, this.rz));
+            const faces = [
+                // 4 triangular sides meeting at apex
+                { idx: [4, 0, 1] },
+                { idx: [4, 1, 2] },
+                { idx: [4, 2, 3] },
+                { idx: [4, 3, 0] },
+                // 1 square base
+                { idx: [0, 3, 2, 1] }
+            ];
+
+            const rotVerts = vertices.map(v => rotate3D(v, this.rx, this.ry, this.rz));
             const lightDir = [-0.577, -0.577, 0.577];
 
             const sortedFaces = faces.map(f => {
-                const rotNorm = rotate3D(f.norm, this.rx, this.ry, this.rz);
-                const avgZ = f.idx.reduce((sum, i) => sum + rotatedVerts[i][2], 0) / 4;
-                const dot = rotNorm[0] * lightDir[0] + rotNorm[1] * lightDir[1] + rotNorm[2] * lightDir[2];
-                return { ...f, avgZ, dot, visible: rotNorm[2] > -0.05 };
+                const pts = f.idx.map(i => rotVerts[i]);
+                // Compute normal via cross product (p1 - p0) x (p2 - p0)
+                const ux = pts[1][0] - pts[0][0], uy = pts[1][1] - pts[0][1], uz = pts[1][2] - pts[0][2];
+                const vx = pts[2][0] - pts[0][0], vy = pts[2][1] - pts[0][1], vz = pts[2][2] - pts[0][2];
+                const nx = uy * vz - uz * vy;
+                const ny = uz * vx - ux * vz;
+                const nz = ux * vy - uy * vx;
+                const len = Math.hypot(nx, ny, nz) || 1;
+                const norm = [nx / len, ny / len, nz / len];
+
+                const avgZ = pts.reduce((sum, p) => sum + p[2], 0) / pts.length;
+                const dot = norm[0] * lightDir[0] + norm[1] * lightDir[1] + norm[2] * lightDir[2];
+                return { pts, avgZ, dot, visible: norm[2] > -0.1 };
             }).sort((a, b) => a.avgZ - b.avgZ);
 
             sortedFaces.forEach(f => {
                 if (!f.visible) return;
-                const pts = f.idx.map(i => rotatedVerts[i]);
                 ctx.beginPath();
-                ctx.moveTo(pts[0][0], pts[0][1]);
-                for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
+                ctx.moveTo(f.pts[0][0], f.pts[0][1]);
+                for (let k = 1; k < f.pts.length; k++) ctx.lineTo(f.pts[k][0], f.pts[k][1]);
                 ctx.closePath();
 
                 const intensity = Math.max(0, Math.min(1, (f.dot + 1) / 2));
@@ -1027,118 +1047,161 @@ function initBackgroundCanvas() {
 
                 ctx.fillStyle = color;
                 ctx.fill();
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.38)";
                 ctx.lineWidth = 1;
                 ctx.stroke();
             });
         }
 
-        drawOctahedron(s) {
-            const h = s * 1.05;
-            const vertices = [
-                [0, -h, 0], [0, h, 0],
-                [-h * 0.75, 0, 0], [h * 0.75, 0, 0],
-                [0, 0, -h * 0.75], [0, 0, h * 0.75]
-            ];
-            const faces = [
-                [0, 2, 5], [0, 5, 3], [0, 3, 4], [0, 4, 2],
-                [1, 5, 2], [1, 3, 5], [1, 4, 3], [1, 2, 4]
-            ];
+        /* --- 3. 3D STAR --- */
+        drawStar(s) {
+            const points = 5;
+            const outerR = s * 1.15;
+            const innerR = s * 0.48;
+            const depth = s * 0.42;
 
-            const rotatedVerts = vertices.map(v => rotate3D(v, this.rx, this.ry, this.rz));
+            // Generate 10 star perimeter vertices in XY plane
+            const starRing = [];
+            for (let i = 0; i < points * 2; i++) {
+                const angle = (i * Math.PI) / points - Math.PI / 2;
+                const r = i % 2 === 0 ? outerR : innerR;
+                starRing.push([r * Math.cos(angle), r * Math.sin(angle), 0]);
+            }
+
+            // 2 Apexes on Z axis: Front (+depth) and Back (-depth)
+            const frontApex = [0, 0, depth];
+            const backApex = [0, 0, -depth];
+
+            const allVerts = [...starRing, frontApex, backApex];
+            const frontApexIdx = starRing.length;
+            const backApexIdx = starRing.length + 1;
+
+            const faces = [];
+            for (let i = 0; i < points * 2; i++) {
+                const next = (i + 1) % (points * 2);
+                // Front facet
+                faces.push({ idx: [frontApexIdx, i, next] });
+                // Back facet
+                faces.push({ idx: [backApexIdx, next, i] });
+            }
+
+            const rotVerts = allVerts.map(v => rotate3D(v, this.rx, this.ry, this.rz));
             const lightDir = [-0.5, -0.6, 0.6];
 
             const sortedFaces = faces.map(f => {
-                const p0 = rotatedVerts[f[0]], p1 = rotatedVerts[f[1]], p2 = rotatedVerts[f[2]];
-                const v0 = [p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]];
-                const v1 = [p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2]];
-                const norm = [
-                    v0[1] * v1[2] - v0[2] * v1[1],
-                    v0[2] * v1[0] - v0[0] * v1[2],
-                    v0[0] * v1[1] - v0[1] * v1[0]
-                ];
-                const len = Math.hypot(norm[0], norm[1], norm[2]) || 1;
-                const unitNorm = [norm[0] / len, norm[1] / len, norm[2] / len];
-                const avgZ = (p0[2] + p1[2] + p2[2]) / 3;
-                const dot = unitNorm[0] * lightDir[0] + unitNorm[1] * lightDir[1] + unitNorm[2] * lightDir[2];
-                return { f, avgZ, dot, visible: unitNorm[2] > -0.05, p0, p1, p2 };
+                const pts = f.idx.map(i => rotVerts[i]);
+                const ux = pts[1][0] - pts[0][0], uy = pts[1][1] - pts[0][1], uz = pts[1][2] - pts[0][2];
+                const vx = pts[2][0] - pts[0][0], vy = pts[2][1] - pts[0][1], vz = pts[2][2] - pts[0][2];
+                const nx = uy * vz - uz * vy;
+                const ny = uz * vx - ux * vz;
+                const nz = ux * vy - uy * vx;
+                const len = Math.hypot(nx, ny, nz) || 1;
+                const norm = [nx / len, ny / len, nz / len];
+
+                const avgZ = (pts[0][2] + pts[1][2] + pts[2][2]) / 3;
+                const dot = norm[0] * lightDir[0] + norm[1] * lightDir[1] + norm[2] * lightDir[2];
+                return { pts, avgZ, dot, visible: norm[2] > -0.05 };
             }).sort((a, b) => a.avgZ - b.avgZ);
 
-            sortedFaces.forEach(item => {
-                if (!item.visible) return;
+            sortedFaces.forEach(f => {
+                if (!f.visible) return;
                 ctx.beginPath();
-                ctx.moveTo(item.p0[0], item.p0[1]);
-                ctx.lineTo(item.p1[0], item.p1[1]);
-                ctx.lineTo(item.p2[0], item.p2[1]);
+                ctx.moveTo(f.pts[0][0], f.pts[0][1]);
+                ctx.lineTo(f.pts[1][0], f.pts[1][1]);
+                ctx.lineTo(f.pts[2][0], f.pts[2][1]);
                 ctx.closePath();
 
-                const intensity = Math.max(0, Math.min(1, (item.dot + 1) / 2));
+                const intensity = Math.max(0, Math.min(1, (f.dot + 1) / 2));
                 let color = this.palette.base;
                 if (intensity > 0.68) color = this.palette.highlight;
-                else if (intensity < 0.36) color = this.palette.dark;
+                else if (intensity < 0.32) color = this.palette.dark;
 
                 ctx.fillStyle = color;
                 ctx.fill();
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+                ctx.lineWidth = 0.8;
                 ctx.stroke();
             });
         }
 
-        drawTorus(s) {
-            ctx.save();
-            ctx.rotate(this.rz);
-            const outerR = s * 0.95;
-            const innerR = s * 0.52;
-            const grad = ctx.createLinearGradient(-outerR, -outerR, outerR, outerR);
-            grad.addColorStop(0, this.palette.highlight);
-            grad.addColorStop(0.5, this.palette.base);
-            grad.addColorStop(1, this.palette.dark);
+        /* --- 4. 3D CYLINDER --- */
+        drawCylinder(s) {
+            const N = 12; // Segment count for smooth circle
+            const r = s * 0.65;
+            const h = s * 0.78; // Half height
 
-            ctx.beginPath();
-            ctx.arc(0, 0, outerR, 0, Math.PI * 2, false);
-            ctx.arc(0, 0, innerR, 0, Math.PI * 2, true);
-            ctx.fillStyle = grad;
-            ctx.fill();
+            const topVerts = [];
+            const botVerts = [];
+            for (let i = 0; i < N; i++) {
+                const angle = (i * 2 * Math.PI) / N;
+                const x = r * Math.cos(angle);
+                const z = r * Math.sin(angle);
+                topVerts.push([x, -h, z]);
+                botVerts.push([x,  h, z]);
+            }
 
-            ctx.beginPath();
-            ctx.arc(0, 0, outerR, 0, Math.PI * 2);
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+            const allVerts = [...topVerts, ...botVerts];
+            const rotVerts = allVerts.map(v => rotate3D(v, this.rx, this.ry, this.rz));
+            const lightDir = [-0.577, -0.577, 0.577];
 
-            ctx.restore();
+            const faces = [];
+            // Side Quad faces
+            for (let i = 0; i < N; i++) {
+                const next = (i + 1) % N;
+                // Quad: top_i -> top_next -> bot_next -> bot_i
+                faces.push({
+                    idx: [i, next, N + next, N + i],
+                    isCap: false
+                });
+            }
+            // Top Cap Polygon
+            const topCapIndices = [];
+            for (let i = N - 1; i >= 0; i--) topCapIndices.push(i);
+            faces.push({ idx: topCapIndices, isCap: true });
+
+            // Bottom Cap Polygon
+            const botCapIndices = [];
+            for (let i = 0; i < N; i++) botCapIndices.push(N + i);
+            faces.push({ idx: botCapIndices, isCap: true });
+
+            const sortedFaces = faces.map(f => {
+                const pts = f.idx.map(idx => rotVerts[idx]);
+                const ux = pts[1][0] - pts[0][0], uy = pts[1][1] - pts[0][1], uz = pts[1][2] - pts[0][2];
+                const vx = pts[2][0] - pts[0][0], vy = pts[2][1] - pts[0][1], vz = pts[2][2] - pts[0][2];
+                const nx = uy * vz - uz * vy;
+                const ny = uz * vx - ux * vz;
+                const nz = ux * vy - uy * vx;
+                const len = Math.hypot(nx, ny, nz) || 1;
+                const norm = [nx / len, ny / len, nz / len];
+
+                const avgZ = pts.reduce((sum, p) => sum + p[2], 0) / pts.length;
+                const dot = norm[0] * lightDir[0] + norm[1] * lightDir[1] + norm[2] * lightDir[2];
+                return { pts, avgZ, dot, visible: norm[2] > -0.05, isCap: f.isCap };
+            }).sort((a, b) => a.avgZ - b.avgZ);
+
+            sortedFaces.forEach(f => {
+                if (!f.visible) return;
+                ctx.beginPath();
+                ctx.moveTo(f.pts[0][0], f.pts[0][1]);
+                for (let k = 1; k < f.pts.length; k++) ctx.lineTo(f.pts[k][0], f.pts[k][1]);
+                ctx.closePath();
+
+                const intensity = Math.max(0, Math.min(1, (f.dot + 1) / 2));
+                let color = this.palette.base;
+                if (intensity > 0.65) color = this.palette.highlight;
+                else if (intensity < 0.35) color = this.palette.dark;
+
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+            });
         }
 
-        drawCapsule(s) {
-            ctx.save();
-            ctx.rotate(this.rz);
-            const w = s * 0.6;
-            const h = s * 1.5;
-            const r = w / 2;
-
-            const grad = ctx.createLinearGradient(-w / 2, 0, w / 2, 0);
-            grad.addColorStop(0, this.palette.dark);
-            grad.addColorStop(0.3, this.palette.highlight);
-            grad.addColorStop(0.7, this.palette.base);
-            grad.addColorStop(1, this.palette.dark);
-
-            ctx.beginPath();
-            ctx.roundRect(-w / 2, -h / 2, w, h, [r]);
-            ctx.fillStyle = grad;
-            ctx.fill();
-
-            // Specular sheen stripe
-            ctx.beginPath();
-            ctx.roundRect(-w * 0.25, -h * 0.4, w * 0.18, h * 0.8, [3]);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
-            ctx.fill();
-
-            ctx.restore();
-        }
     }
 
-    function createShapes() {
+        function createShapes() {
         shapes = [];
         const isMobile = width < 768;
         const count = isMobile ? 10 : Math.min(20, Math.max(14, Math.floor((width * height) / 75000)));
