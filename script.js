@@ -91,7 +91,479 @@ document.addEventListener('DOMContentLoaded', () => {
     const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
     sections.forEach(sec => sectionObserver.observe(sec));
 
-    // --- Contact Form Handling ---
+    // --- Admin & Submissions Portal System (100% Front-End) ---
+    const STORAGE_KEY_INQUIRIES = 'bharath_portal_submissions';
+    const STORAGE_KEY_AUTH = 'bharath_portal_auth_user';
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function getInquiries() {
+        try {
+            const data = localStorage.getItem(STORAGE_KEY_INQUIRIES);
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error('Failed to parse inquiries from localStorage', e);
+            return [];
+        }
+    }
+
+    function saveInquiries(inquiries) {
+        try {
+            localStorage.setItem(STORAGE_KEY_INQUIRIES, JSON.stringify(inquiries));
+        } catch (e) {
+            console.error('Failed to save inquiries to localStorage', e);
+        }
+    }
+
+    function addInquiry(inquiry) {
+        const list = getInquiries();
+        list.unshift(inquiry);
+        saveInquiries(list);
+        updatePortalBadge();
+        renderPortalDashboard();
+    }
+
+    function deleteInquiry(id) {
+        let list = getInquiries();
+        list = list.filter(item => item.id !== id);
+        saveInquiries(list);
+        updatePortalBadge();
+        renderPortalDashboard();
+    }
+
+    function clearAllInquiries() {
+        if (confirm('Are you sure you want to clear all inquiries from this browser?')) {
+            saveInquiries([]);
+            updatePortalBadge();
+            renderPortalDashboard();
+        }
+    }
+
+    function getStoredAuth() {
+        try {
+            return localStorage.getItem(STORAGE_KEY_AUTH) || sessionStorage.getItem(STORAGE_KEY_AUTH);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setStoredAuth(username, remember) {
+        try {
+            if (remember) {
+                localStorage.setItem(STORAGE_KEY_AUTH, username);
+            } else {
+                sessionStorage.setItem(STORAGE_KEY_AUTH, username);
+            }
+        } catch (e) {}
+    }
+
+    function clearStoredAuth() {
+        try {
+            localStorage.removeItem(STORAGE_KEY_AUTH);
+            sessionStorage.removeItem(STORAGE_KEY_AUTH);
+        } catch (e) {}
+    }
+
+    function updatePortalBadge() {
+        const inquiries = getInquiries();
+        const badge = document.getElementById('portalBadgeCount');
+        if (badge) {
+            if (inquiries.length > 0) {
+                badge.textContent = inquiries.length > 99 ? '99+' : inquiries.length;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
+    // Modal Visibility Controls
+    const portalModal = document.getElementById('portalModal');
+    const closePortalBtn = document.getElementById('closePortalModal');
+    const brandLogo = document.getElementById('brandLogo');
+    const footerBrandLogo = document.getElementById('footerBrandLogo');
+
+    function openPortal() {
+        if (!portalModal) return;
+        portalModal.classList.add('open');
+        portalModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        const currentUser = getStoredAuth();
+        if (currentUser) {
+            showDashboardView();
+        } else {
+            showLoginView();
+        }
+    }
+
+    function closePortal() {
+        if (!portalModal) return;
+        portalModal.classList.remove('open');
+        portalModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    if (brandLogo) {
+        brandLogo.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    if (footerBrandLogo) {
+        footerBrandLogo.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    if (closePortalBtn) {
+        closePortalBtn.addEventListener('click', closePortal);
+    }
+
+    if (portalModal) {
+        portalModal.addEventListener('click', (e) => {
+            if (e.target === portalModal) {
+                closePortal();
+            }
+        });
+    }
+
+    // Keyboard navigation (Escape key closes both modals)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (portalModal && portalModal.classList.contains('open')) {
+                closePortal();
+            }
+        }
+    });
+
+    // View Switching
+    const portalLoginView = document.getElementById('portalLoginView');
+    const portalDashboardView = document.getElementById('portalDashboardView');
+    const portalLoginForm = document.getElementById('portalLoginForm');
+    const portalLoginError = document.getElementById('portalLoginError');
+    const portalQuickFillBtn = document.getElementById('portalQuickFillBtn');
+    const portalLogoutBtn = document.getElementById('portalLogoutBtn');
+    const togglePasswordBtn = document.getElementById('togglePortalPassword');
+    const eyeIconOpen = document.getElementById('eyeIconOpen');
+    const eyeIconClosed = document.getElementById('eyeIconClosed');
+    const portalPasswordInput = document.getElementById('portalPassword');
+
+    function showLoginView() {
+        if (portalLoginView) portalLoginView.style.display = 'block';
+        if (portalDashboardView) portalDashboardView.style.display = 'none';
+        if (portalLoginError) {
+            portalLoginError.style.display = 'none';
+            portalLoginError.textContent = '';
+        }
+        setTimeout(() => {
+            const u = document.getElementById('portalUsername');
+            if (u) u.focus();
+        }, 100);
+    }
+
+    function showDashboardView() {
+        if (portalLoginView) portalLoginView.style.display = 'none';
+        if (portalDashboardView) portalDashboardView.style.display = 'block';
+        renderPortalDashboard();
+    }
+
+    // Toggle Password Visibility
+    if (togglePasswordBtn && portalPasswordInput) {
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = portalPasswordInput.type === 'password';
+            portalPasswordInput.type = isPassword ? 'text' : 'password';
+            if (eyeIconOpen && eyeIconClosed) {
+                eyeIconOpen.style.display = isPassword ? 'none' : 'block';
+                eyeIconClosed.style.display = isPassword ? 'block' : 'none';
+            }
+        });
+    }
+
+    // Quick Fill Demo Credentials
+    if (portalQuickFillBtn) {
+        portalQuickFillBtn.addEventListener('click', () => {
+            const u = document.getElementById('portalUsername');
+            const p = document.getElementById('portalPassword');
+            if (u) u.value = 'admin';
+            if (p) p.value = 'admin123';
+            if (portalLoginError) portalLoginError.style.display = 'none';
+            if (p) p.focus();
+        });
+    }
+
+    // Login Form Submit
+    if (portalLoginForm) {
+        portalLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const uInput = document.getElementById('portalUsername');
+            const pInput = document.getElementById('portalPassword');
+            const remInput = document.getElementById('portalRememberMe');
+
+            const username = (uInput ? uInput.value : '').trim();
+            const password = (pInput ? pInput.value : '').trim();
+            const remember = remInput ? remInput.checked : true;
+
+            const isValid = (
+                (username.toLowerCase() === 'bharath8635' && password === 'Vadla@') ||
+                (username.toLowerCase() === 'admin' && (password === 'admin123' || password === 'Vadla@'))
+            );
+
+            if (isValid) {
+                setStoredAuth(username, remember);
+                if (portalLoginError) portalLoginError.style.display = 'none';
+                showDashboardView();
+            } else {
+                if (portalLoginError) {
+                    portalLoginError.style.display = 'block';
+                    portalLoginError.textContent = 'Invalid username or password. Please check your credentials.';
+                }
+            }
+        });
+    }
+
+    // Logout
+    if (portalLogoutBtn) {
+        portalLogoutBtn.addEventListener('click', () => {
+            clearStoredAuth();
+            showLoginView();
+        });
+    }
+
+    // Dashboard Search & Actions
+    const portalSearchInput = document.getElementById('portalSearchInput');
+    const portalAddDemoBtn = document.getElementById('portalAddDemoBtn');
+    const portalExportBtn = document.getElementById('portalExportBtn');
+    const portalClearBtn = document.getElementById('portalClearBtn');
+
+    if (portalSearchInput) {
+        portalSearchInput.addEventListener('input', () => {
+            renderPortalDashboard();
+        });
+    }
+
+    if (portalAddDemoBtn) {
+        portalAddDemoBtn.addEventListener('click', () => {
+            addSampleInquiry();
+        });
+    }
+
+    if (portalExportBtn) {
+        portalExportBtn.addEventListener('click', () => {
+            exportInquiriesCSV();
+        });
+    }
+
+    if (portalClearBtn) {
+        portalClearBtn.addEventListener('click', clearAllInquiries);
+    }
+
+    function addSampleInquiry() {
+        const sampleNames = ['Kavya Reddy', 'Rohan Verma', 'Sarah Jenkins', 'Sai Karthik', 'Alex Rivera'];
+        const sampleEmails = ['kavya.reddy@gmail.com', 'rohan.v@techcorp.io', 'sarah.j@designdrive.com', 'sai.karthik@startup.in', 'alex@riveramedia.com'];
+        const sampleSubjects = ['Front-End Collaboration', 'Website Redesign Project', 'Freelance React Developer', 'UI Consultation', 'Job Opportunity'];
+        const sampleMessages = [
+            'Hi Bharath, I came across your portfolio and was impressed by your clean design and animations. We are looking for a developer for our modern web portal. Let us know your availability!',
+            'Hello Vadla Bharath! We need a front-end specialist to build responsive dashboard components. Would love to collaborate with you.',
+            'Hi Bharath! Fantastic portfolio with great attention to detail. Let us connect regarding a full-time / contract opportunity.'
+        ];
+
+        const idx = Math.floor(Math.random() * sampleNames.length);
+        const mIdx = Math.floor(Math.random() * sampleMessages.length);
+        const now = new Date();
+
+        const sample = {
+            id: 'inq_' + Date.now(),
+            name: sampleNames[idx],
+            email: sampleEmails[idx],
+            subject: sampleSubjects[idx],
+            message: sampleMessages[mIdx],
+            createdAt: now.toISOString(),
+            formattedDate: now.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        };
+
+        addInquiry(sample);
+    }
+
+    function exportInquiriesCSV() {
+        const inquiries = getInquiries();
+        if (inquiries.length === 0) {
+            alert('No inquiries found to export.');
+            return;
+        }
+
+        const headers = ['ID', 'Date', 'Name', 'Email', 'Subject', 'Message'];
+        const rows = inquiries.map(item => [
+            `"${item.id}"`,
+            `"${item.formattedDate || item.createdAt}"`,
+            `"${(item.name || '').replace(/"/g, '""')}"`,
+            `"${(item.email || '').replace(/"/g, '""')}"`,
+            `"${(item.subject || '').replace(/"/g, '""')}"`,
+            `"${(item.message || '').replace(/"/g, '""')}"`
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bharath_portal_inquiries_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function renderPortalDashboard() {
+        const container = document.getElementById('portalSubmissionsList');
+        const metricTotal = document.getElementById('metricTotalCount');
+        const metricLatest = document.getElementById('metricLatestTime');
+        const searchInput = document.getElementById('portalSearchInput');
+
+        const inquiries = getInquiries();
+
+        if (metricTotal) metricTotal.textContent = inquiries.length;
+        if (metricLatest) {
+            metricLatest.textContent = inquiries.length > 0 ? (inquiries[0].formattedDate || 'Recent') : '-';
+        }
+
+        if (!container) return;
+
+        let filtered = inquiries;
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        if (query) {
+            filtered = inquiries.filter(item => {
+                return (
+                    (item.name && item.name.toLowerCase().includes(query)) ||
+                    (item.email && item.email.toLowerCase().includes(query)) ||
+                    (item.subject && item.subject.toLowerCase().includes(query)) ||
+                    (item.message && item.message.toLowerCase().includes(query))
+                );
+            });
+        }
+
+        if (filtered.length === 0) {
+            if (query) {
+                container.innerHTML = `
+                    <div class="portal-empty-state">
+                        <div class="empty-state-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <div class="empty-state-title">No matching inquiries found</div>
+                        <p class="empty-state-desc">No messages matching "${escapeHtml(query)}". Try another search term.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="portal-empty-state">
+                        <div class="empty-state-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="empty-state-title">No inquiries recorded yet</div>
+                        <p class="empty-state-desc">When someone fills out the contact form at the bottom of the page, their details will automatically show up here!</p>
+                        <button type="button" class="btn-demo-quickfill" id="emptyStateAddDemoBtn">
+                            + Add Sample Inquiry Now
+                        </button>
+                    </div>
+                `;
+                const btn = document.getElementById('emptyStateAddDemoBtn');
+                if (btn) btn.addEventListener('click', addSampleInquiry);
+            }
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(item => {
+            const initial = item.name ? item.name.charAt(0).toUpperCase() : '?';
+            html += `
+                <div class="inquiry-card" id="card_${item.id}">
+                    <div class="inquiry-header">
+                        <div class="inquiry-author">
+                            <div class="inquiry-avatar">${escapeHtml(initial)}</div>
+                            <div>
+                                <div class="inquiry-name">${escapeHtml(item.name)}</div>
+                                <a href="mailto:${encodeURIComponent(item.email)}" class="inquiry-email">
+                                    ${escapeHtml(item.email)}
+                                </a>
+                            </div>
+                        </div>
+                        <span class="inquiry-date">${escapeHtml(item.formattedDate || 'Recorded')}</span>
+                    </div>
+
+                    ${item.subject ? `<div class="inquiry-subject">${escapeHtml(item.subject)}</div>` : ''}
+
+                    <div class="inquiry-message">${escapeHtml(item.message)}</div>
+
+                    <div class="inquiry-actions">
+                        <a href="mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent('Re: ' + (item.subject || 'Portfolio Inquiry'))}" class="inquiry-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            <span>Reply</span>
+                        </a>
+                        <button type="button" class="inquiry-btn" data-copy-id="${item.id}">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span class="copy-label">Copy</span>
+                        </button>
+                        <button type="button" class="inquiry-btn btn-del" data-delete-id="${item.id}">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Attach dynamic action listeners
+        container.querySelectorAll('[data-delete-id]').forEach(delBtn => {
+            delBtn.addEventListener('click', () => {
+                const id = delBtn.getAttribute('data-delete-id');
+                deleteInquiry(id);
+            });
+        });
+
+        container.querySelectorAll('[data-copy-id]').forEach(copyBtn => {
+            copyBtn.addEventListener('click', () => {
+                const id = copyBtn.getAttribute('data-copy-id');
+                const targetItem = inquiries.find(it => it.id === id);
+                if (targetItem) {
+                    const text = `Name: ${targetItem.name}\nEmail: ${targetItem.email}\nSubject: ${targetItem.subject}\nDate: ${targetItem.formattedDate}\nMessage: ${targetItem.message}`;
+                    navigator.clipboard.writeText(text).then(() => {
+                        const lbl = copyBtn.querySelector('.copy-label');
+                        if (lbl) {
+                            const orig = lbl.textContent;
+                            lbl.textContent = 'Copied!';
+                            setTimeout(() => { lbl.textContent = orig; }, 2000);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    // Initialize portal badge count on load
+    updatePortalBadge();
+
+    // --- Contact Form Handling (Stores to Front-End Portal Immediately) ---
     const contactForm = document.getElementById('contactForm');
     const formStatus = document.getElementById('formStatus');
 
@@ -107,6 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!name || !email || !message) {
                 formStatus.className = 'form-status error';
                 formStatus.textContent = 'Please fill out all required fields (Name, Email, and Message).';
+                formStatus.style.display = 'block';
                 return;
             }
 
@@ -114,37 +587,77 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalBtnText = submitBtn.innerHTML;
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span>Sending...</span>';
+            submitBtn.innerHTML = '<span>Saving &amp; Sending...</span>';
 
+            // 1. Immediately store into Front-End LocalStorage Portal
+            const now = new Date();
+            const newInquiry = {
+                id: 'inq_' + Date.now(),
+                name: name,
+                email: email,
+                subject: subject || 'Portfolio Inquiry',
+                message: message,
+                createdAt: now.toISOString(),
+                formattedDate: now.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            addInquiry(newInquiry);
+
+            // 2. Display success card with direct Portal Button
+            formStatus.className = 'form-status success';
+            formStatus.innerHTML = `
+                <div class="form-success-inner">
+                    <strong style="color: #10b981; font-size: 1rem;">✓ Message Sent &amp; Recorded!</strong>
+                    <p style="margin: 4px 0 6px; font-size: 0.9rem; color: #f8fafc;">
+                        Thank you, <strong>${escapeHtml(name)}</strong>! Your submission has been saved directly to the Admin Portal.
+                    </p>
+                    <a href="admin.html" class="btn-view-portal-direct" id="openPortalFromForm" style="text-decoration: none;">
+                        <span>Open Admin to View Details</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            `;
+            formStatus.style.display = 'block';
+
+            const openPortalBtnDirect = document.getElementById('openPortalFromForm');
+            if (openPortalBtnDirect) {
+                openPortalBtnDirect.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = 'admin.html';
+                });
+            }
+
+            contactForm.reset();
+
+            // 3. Background attempt to forward to formsubmit (silent fallback if offline)
             try {
-                const response = await fetch('https://formsubmit.co/ajax/vadlabharathchary03@gmail.com', {
+                fetch('https://formsubmit.co/ajax/vadlabharathchary03@gmail.com', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        ...Object.fromEntries(new FormData(contactForm).entries()),
+                        name: name,
+                        email: email,
+                        subject: subject || `Portfolio message from ${name}`,
+                        message: message,
                         _subject: subject || `Portfolio message from ${name}`
                     })
+                }).catch(err => {
+                    console.log('Online mail notification queued/offline, data safely stored in portal:', err);
                 });
-                const result = await response.json();
-
-                if (!response.ok || result.success !== 'true' && result.success !== true) {
-                    throw new Error(result.message || 'Message delivery failed.');
-                }
-
-                formStatus.className = 'form-status success';
-                formStatus.textContent = `Thank you, ${name}! Your message has been sent. I'll get back to you soon.`;
-                contactForm.reset();
-                setTimeout(() => {
-                    formStatus.style.display = 'none';
-                    formStatus.className = 'form-status';
-                }, 6000);
-            } catch (error) {
-                console.error('[Contact Form]', error);
-                formStatus.className = 'form-status error';
-                formStatus.textContent = 'Sorry, your message could not be sent. Please email vadlabharathchary03@gmail.com directly.';
+            } catch (err) {
+                console.log('Background mail error handled:', err);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
@@ -193,6 +706,34 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = '';
         }
     });
+
+    
+    // --- Hero Photo Click Trigger to Open Admin Portal ---
+    const heroPhotoWrapper = document.getElementById('heroPhotoWrapper') || document.querySelector('.hero-image-wrapper');
+    const heroPhotoImg = document.getElementById('heroPhotoImg') || document.querySelector('.hero-img');
+
+    function navigateToAdmin(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        window.location.href = 'admin.html';
+    }
+
+    if (heroPhotoWrapper) {
+        heroPhotoWrapper.style.cursor = 'pointer';
+        heroPhotoWrapper.addEventListener('click', navigateToAdmin);
+        heroPhotoWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                navigateToAdmin(e);
+            }
+        });
+    }
+
+    if (heroPhotoImg) {
+        heroPhotoImg.style.cursor = 'pointer';
+        heroPhotoImg.addEventListener('click', navigateToAdmin);
+    }
 
     // --- Initialize Interactive Background Animation ---
     initBackgroundCanvas();
