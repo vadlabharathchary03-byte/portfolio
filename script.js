@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formStatus = document.getElementById('formStatus');
 
     if (contactForm && formStatus) {
-        contactForm.addEventListener('submit', (e) => {
+        contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const name = document.getElementById('userName').value.trim();
@@ -112,23 +112,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
-            
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Sending...</span>';
 
-            // Simulate server response
-            setTimeout(() => {
-                formStatus.className = 'form-status success';
-                formStatus.textContent = `Thank you, ${name}! Your message has been sent successfully. I'll get back to you soon.`;
-                contactForm.reset();
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
+            try {
+                const response = await fetch('https://formsubmit.co/ajax/vadlabharathchary03@gmail.com', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...Object.fromEntries(new FormData(contactForm).entries()),
+                        _subject: subject || `Portfolio message from ${name}`
+                    })
+                });
+                const result = await response.json();
 
+                if (!response.ok || result.success !== 'true' && result.success !== true) {
+                    throw new Error(result.message || 'Message delivery failed.');
+                }
+
+                formStatus.className = 'form-status success';
+                formStatus.textContent = `Thank you, ${name}! Your message has been sent. I'll get back to you soon.`;
+                contactForm.reset();
                 setTimeout(() => {
                     formStatus.style.display = 'none';
                     formStatus.className = 'form-status';
                 }, 6000);
-            }, 1000);
+            } catch (error) {
+                console.error('[Contact Form]', error);
+                formStatus.className = 'form-status error';
+                formStatus.textContent = 'Sorry, your message could not be sent. Please email vadlabharathchary03@gmail.com directly.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
         });
     }
 
@@ -854,5 +874,4 @@ function initBackgroundCanvas() {
     }, { threshold: 0.1 });
     obs.observe(section);
 })();
-
 
