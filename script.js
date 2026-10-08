@@ -665,17 +665,77 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- CV Modal & Download Preview ---
+    // --- CV Modal & Direct Download Preview ---
     const cvBtn = document.getElementById('downloadCvBtn');
     const resumeModal = document.getElementById('resumeModal');
     const closeModal = document.getElementById('closeModal');
     const printCvBtn = document.getElementById('printCvBtn');
+    const modalDownloadBtn = document.getElementById('modalDownloadBtn');
+    const modalBottomDownloadBtn = document.getElementById('modalBottomDownloadBtn');
+    const cvTabSummaryBtn = document.getElementById('cvTabSummaryBtn');
+    const cvTabPdfBtn = document.getElementById('cvTabPdfBtn');
+    const cvTabSummaryContent = document.getElementById('cvTabSummaryContent');
+    const cvTabPdfContent = document.getElementById('cvTabPdfContent');
 
-    if (cvBtn && resumeModal) {
+    function triggerDirectDownload() {
+        const link = document.createElement('a');
+        link.href = 'Vadla_Bharath_Chary_CV.pdf';
+        link.download = 'Vadla_Bharath_Chary_CV.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function openCvPreviewTab() {
+        window.open('Vadla_Bharath_Chary_CV.pdf', '_blank');
+    }
+
+    if (cvBtn) {
         cvBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            resumeModal.classList.add('open');
-            document.body.style.overflow = 'hidden';
+
+            // 1. Direct download CV file immediately to visitor's computer
+            triggerDirectDownload();
+
+            // 2. Open CV immediately in a new tab for instant reading
+            openCvPreviewTab();
+
+            // 3. Open resume modal on portfolio page
+            if (resumeModal) {
+                resumeModal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
+
+    if (modalDownloadBtn) {
+        modalDownloadBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            triggerDirectDownload();
+        });
+    }
+
+    if (modalBottomDownloadBtn) {
+        modalBottomDownloadBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            triggerDirectDownload();
+        });
+    }
+
+    // Modal Tabs
+    if (cvTabSummaryBtn && cvTabPdfBtn && cvTabSummaryContent && cvTabPdfContent) {
+        cvTabSummaryBtn.addEventListener('click', () => {
+            cvTabSummaryBtn.classList.add('active');
+            cvTabPdfBtn.classList.remove('active');
+            cvTabSummaryContent.style.display = 'block';
+            cvTabPdfContent.style.display = 'none';
+        });
+
+        cvTabPdfBtn.addEventListener('click', () => {
+            cvTabPdfBtn.classList.add('active');
+            cvTabSummaryBtn.classList.remove('active');
+            cvTabSummaryContent.style.display = 'none';
+            cvTabPdfContent.style.display = 'block';
         });
     }
 

@@ -2736,3 +2736,295 @@ main {
 .hero-image-wrapper:active {
     transform: scale(0.98);
 }
+
+
+/* --- Enhanced CV Modal Styles --- */
+.resume-modal-card {
+    max-width: 840px !important;
+    background: #0b1120 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+    padding: 32px !important;
+}
+
+.cv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cv-header-info {
+    flex: 1;
+    min-width: 260px;
+}
+
+.cv-name {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.cv-subtitle {
+    color: var(--primary);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.cv-contact-chips, .cv-social-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+}
+
+.cv-contact-chips a, .cv-social-chips a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.cv-contact-chips a:hover, .cv-social-chips a:hover {
+    color: var(--primary);
+}
+
+.cv-social-chips {
+    margin-top: 8px;
+}
+
+.cv-header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+}
+
+.cv-view-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.cv-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.cv-tab-btn:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.cv-tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    font-weight: 600;
+}
+
+.cv-section {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cv-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.cv-section-title {
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cv-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.cv-text {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.cv-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.cv-skill-group {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.cv-group-title {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.cv-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.cv-tag-list .skill-tag {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.cv-projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cv-project-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.cv-project-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.cv-project-head h5 {
+    color: #fff;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.cv-badge {
+    font-size: 0.78rem;
+    color: var(--primary);
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.cv-timeline-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.cv-timeline-head strong {
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.cv-timeline-date {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.cv-bullets {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding-left: 20px;
+    margin: 8px 0 14px 0;
+}
+
+.cv-opportunity-pill {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #34d399;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.cv-pdf-frame-wrapper {
+    width: 100%;
+    height: 540px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+}
+
+.cv-pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.cv-pdf-fallback {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.cv-bottom-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}

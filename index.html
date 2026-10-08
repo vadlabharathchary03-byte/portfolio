@@ -84,7 +84,7 @@
                     </p>
 
                     <div class="hero-actions">
-                        <button class="btn btn-primary" id="downloadCvBtn">
+                        <a href="Vadla_Bharath_Chary_CV.pdf" download="Vadla_Bharath_Chary_CV.pdf" class="btn btn-primary" id="downloadCvBtn">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -92,7 +92,7 @@
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                             <span>Download CV</span>
-                        </button>
+                        </a>
                         <a href="#contact" class="btn btn-secondary">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -987,52 +987,238 @@
         </section>
     </main>
 
-    <!-- ==================== CV / Resume Preview Modal ==================== -->
+        <!-- ==================== CV / Resume Preview Modal ==================== -->
     <div class="modal-overlay" id="resumeModal">
-        <div class="modal-content">
+        <div class="modal-content resume-modal-card">
             <button class="modal-close" id="closeModal" aria-label="Close Modal">&times;</button>
-            <div style="text-align: center; margin-bottom: 24px;">
-                <h2 style="font-family: var(--font-heading); color: #fff; margin-bottom: 6px;">Vadla Bharath Chary</h2>
-                <p style="color: var(--primary); font-weight: 600;">Front-End Developer</p>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Telangana, India ΓÇó bharathchary@gmail.com</p>
-            </div>
 
-            <div style="border-top: 1px solid var(--border-color); padding-top: 18px; margin-bottom: 20px;">
-                <h4 style="color: #fff; margin-bottom: 8px;">Professional Summary</h4>
-                <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">
-                    Front-End Developer dedicated to creating modern, responsive, and user-centric web applications.
-                    Skilled in HTML5, CSS3, JavaScript (ES6+), and responsive design principles, with an eye for
-                    pixel-perfect detail.
-                </p>
-            </div>
+            <!-- CV Header -->
+            <div class="cv-header">
+                <div class="cv-header-info">
+                    <h2 class="cv-name">Vadla Bharath Chary</h2>
+                    <p class="cv-subtitle">Front-End Developer</p>
+                    <div class="cv-contact-chips">
+                        <span>📍 Mahabubnagar, Telangana, India</span>
+                        <span>📞 <a href="tel:+918374801364">+91 8374801364</a></span>
+                        <span>✉️ <a href="mailto:vadlabharathchary03@gmail.com">vadlabharathchary03@gmail.com</a></span>
+                    </div>
+                    <div class="cv-social-chips">
+                        <a href="https://portfolio-wine-one-46gg9w9qbi.vercel.app" target="_blank" rel="noopener noreferrer">🌐 Portfolio</a>
+                        <a href="https://github.com/vadlabharathchary03-byte" target="_blank" rel="noopener noreferrer">💻 GitHub: vadlabharathchary03-byte</a>
+                        <a href="https://instagram.com/bharath__1" target="_blank" rel="noopener noreferrer">📸 Instagram: @bharath__1</a>
+                    </div>
+                </div>
 
-            <div style="border-top: 1px solid var(--border-color); padding-top: 18px; margin-bottom: 20px;">
-                <h4 style="color: #fff; margin-bottom: 8px;">Key Technical Skills</h4>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <span class="skill-tag">HTML5</span>
-                    <span class="skill-tag">CSS3</span>
-                    <span class="skill-tag">JavaScript (ES6+)</span>
-                    <span class="skill-tag">React.js Basics</span>
-                    <span class="skill-tag">Responsive Web Design</span>
-                    <span class="skill-tag">Git / GitHub</span>
-                    <span class="skill-tag">UI/UX Layouts</span>
+                <!-- Top Quick Actions -->
+                <div class="cv-header-actions">
+                    <a href="Vadla_Bharath_Chary_CV.pdf" download="Vadla_Bharath_Chary_CV.pdf" class="btn btn-primary btn-sm" id="modalDownloadBtn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Download PDF</span>
+                    </a>
+                    <a href="Vadla_Bharath_Chary_CV.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" id="modalOpenTabBtn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        <span>Open in New Tab</span>
+                    </a>
                 </div>
             </div>
 
-            <div style="border-top: 1px solid var(--border-color); padding-top: 18px; margin-bottom: 24px;">
-                <h4 style="color: #fff; margin-bottom: 8px;">Featured Highlights</h4>
-                <ul
-                    style="color: var(--text-muted); font-size: 0.92rem; list-style: disc; padding-left: 20px; line-height: 1.6;">
-                    <li>Engineered responsive web applications with interactive state handling.</li>
-                    <li>Designed modern glassmorphism layouts optimized for mobile and desktop screens.</li>
-                    <li>Focused on clean, maintainable code and fast-loading web assets.</li>
-                </ul>
+            <!-- View Tabs -->
+            <div class="cv-view-tabs">
+                <button type="button" class="cv-tab-btn active" id="cvTabSummaryBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    <span>Structured CV</span>
+                </button>
+                <button type="button" class="cv-tab-btn" id="cvTabPdfBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Original PDF Document</span>
+                </button>
             </div>
 
-            <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                <button class="btn btn-primary" id="printCvBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+            <!-- TAB 1: Structured Details -->
+            <div class="cv-tab-content" id="cvTabSummaryContent">
+                <!-- Professional Summary -->
+                <div class="cv-section">
+                    <h4 class="cv-section-title">Professional Summary</h4>
+                    <p class="cv-text">
+                        Aspiring and creative Front-End Developer focused on building modern, responsive, high-performance web interfaces. Strong foundation in HTML5, CSS3, JavaScript (ES6+), responsive design, UI development, and React fundamentals. Passionate about clean, maintainable code, intuitive user experiences, pixel-perfect layouts, and continuously learning modern web technologies.
+                    </p>
+                </div>
+
+                <!-- Technical Skills -->
+                <div class="cv-section">
+                    <h4 class="cv-section-title">Technical Skills</h4>
+                    <div class="cv-skills-grid">
+                        <div class="cv-skill-group">
+                            <span class="cv-group-title">Frontend Core</span>
+                            <div class="cv-tag-list">
+                                <span class="skill-tag">HTML5</span>
+                                <span class="skill-tag">Semantic Web</span>
+                                <span class="skill-tag">CSS3</span>
+                                <span class="skill-tag">Flexbox</span>
+                                <span class="skill-tag">CSS Grid</span>
+                                <span class="skill-tag">JavaScript (ES6+)</span>
+                                <span class="skill-tag">Responsive Web Design</span>
+                            </div>
+                        </div>
+                        <div class="cv-skill-group">
+                            <span class="cv-group-title">JavaScript &amp; Web</span>
+                            <div class="cv-tag-list">
+                                <span class="skill-tag">DOM Manipulation</span>
+                                <span class="skill-tag">Fetch / REST APIs</span>
+                                <span class="skill-tag">Async/Await</span>
+                                <span class="skill-tag">Local Storage</span>
+                                <span class="skill-tag">Interactive UI</span>
+                            </div>
+                        </div>
+                        <div class="cv-skill-group">
+                            <span class="cv-group-title">Frameworks &amp; Styling</span>
+                            <div class="cv-tag-list">
+                                <span class="skill-tag">React.js Fundamentals</span>
+                                <span class="skill-tag">Tailwind CSS</span>
+                                <span class="skill-tag">CSS Variables</span>
+                                <span class="skill-tag">Glassmorphism</span>
+                                <span class="skill-tag">Micro-Animations</span>
+                                <span class="skill-tag">Component Design</span>
+                            </div>
+                        </div>
+                        <div class="cv-skill-group">
+                            <span class="cv-group-title">Tools, Workflow &amp; Quality</span>
+                            <div class="cv-tag-list">
+                                <span class="skill-tag">Git</span>
+                                <span class="skill-tag">GitHub</span>
+                                <span class="skill-tag">VS Code</span>
+                                <span class="skill-tag">Browser DevTools</span>
+                                <span class="skill-tag">Figma-to-HTML/CSS</span>
+                                <span class="skill-tag">Cross-Browser Compatibility</span>
+                                <span class="skill-tag">Debugging</span>
+                                <span class="skill-tag">SEO Best Practices</span>
+                                <span class="skill-tag">Performance Optimization</span>
+                                <span class="skill-tag">Clean Architecture</span>
+                                <span class="skill-tag">UI/UX Layouts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Projects -->
+                <div class="cv-section">
+                    <h4 class="cv-section-title">Featured Projects</h4>
+                    <div class="cv-projects-list">
+                        <div class="cv-project-card">
+                            <div class="cv-project-head">
+                                <h5>E-Commerce Web Application</h5>
+                                <span class="cv-badge">HTML5 • CSS3/Grid • JavaScript • Local Storage</span>
+                            </div>
+                            <p class="cv-text">Dynamic responsive online store interface with product catalog filtering, interactive cart drawer, checkout workflow, local storage, and smooth micro-animations.</p>
+                        </div>
+                        <div class="cv-project-card">
+                            <div class="cv-project-head">
+                                <h5>Creative Agency Showcase</h5>
+                                <span class="cv-badge">HTML5 • Modern CSS • Vanilla JavaScript • Responsive Design</span>
+                            </div>
+                            <p class="cv-text">High-converting dark-theme agency landing page featuring glassmorphism UI, animated statistics, client testimonials, and responsive navigation.</p>
+                        </div>
+                        <div class="cv-project-card">
+                            <div class="cv-project-head">
+                                <h5>Interactive Dashboard App</h5>
+                                <span class="cv-badge">JavaScript ES6 • Async/Await • REST API • CSS Variables</span>
+                            </div>
+                            <p class="cv-text">Interactive dashboard combining real-time weather data through REST APIs with task management, drag-and-drop interactions, and theme switching.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience & Journey -->
+                <div class="cv-section">
+                    <h4 class="cv-section-title">Experience &amp; Development Journey</h4>
+                    <div class="cv-timeline-item">
+                        <div class="cv-timeline-head">
+                            <strong>Front-End Developer &amp; Project Builder</strong>
+                            <span class="cv-timeline-date">2023 – Present</span>
+                        </div>
+                        <p class="cv-text">Independent &amp; Freelance Projects — Designing and implementing responsive user interfaces, building modular frontend components with modern JavaScript and CSS, optimizing performance, and contributing to web design projects.</p>
+                    </div>
+                    <div class="cv-timeline-item" style="margin-top: 14px;">
+                        <div class="cv-timeline-head">
+                            <strong>Intensive Web Development Training</strong>
+                            <span class="cv-timeline-date">2022 – 2023</span>
+                        </div>
+                        <p class="cv-text">Self-directed and professional learning covering semantic HTML5, advanced CSS, Flexbox, Grid, CSS animations, JavaScript ES6+, DOM manipulation, asynchronous programming, and Git collaboration workflows.</p>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="cv-section">
+                    <h4 class="cv-section-title">Education</h4>
+                    <div class="cv-timeline-item">
+                        <div class="cv-timeline-head">
+                            <strong>Bachelor of Technology (B.Tech) – Computer Science &amp; Engineering (CSE)</strong>
+                            <span class="cv-timeline-date">1st Year Undergraduate Student</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highlights & Opportunities -->
+                <div class="cv-section">
+                    <h4 class="cv-section-title">Selected Highlights</h4>
+                    <ul class="cv-bullets">
+                        <li>10+ projects completed with a strong focus on responsive web experiences.</li>
+                        <li>Built interfaces designed for mobile, tablet, and desktop screens.</li>
+                        <li>Experienced in modern glassmorphism layouts, UI interactions, and micro-animations.</li>
+                        <li>Focused on clean, maintainable code, usability, performance, and visual detail.</li>
+                    </ul>
+                    <div class="cv-opportunity-pill">
+                        💼 <strong>Status:</strong> Open to internships, freelance opportunities, and entry-level opportunities in front-end development, web design, and UI development.
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Embedded PDF Document View -->
+            <div class="cv-tab-content" id="cvTabPdfContent" style="display: none;">
+                <div class="cv-pdf-frame-wrapper">
+                    <iframe src="Vadla_Bharath_Chary_CV.pdf#toolbar=0" class="cv-pdf-iframe" title="Vadla Bharath Chary CV Document"></iframe>
+                </div>
+                <div class="cv-pdf-fallback">
+                    <p style="margin-bottom: 8px;">Viewing on a device or browser that limits embedded PDF display?</p>
+                    <a href="Vadla_Bharath_Chary_CV.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                        Open PDF in New Browser Tab
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="cv-bottom-actions">
+                <a href="Vadla_Bharath_Chary_CV.pdf" download="Vadla_Bharath_Chary_CV.pdf" class="btn btn-primary" id="modalBottomDownloadBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download CV (PDF)</span>
+                </a>
+                <button class="btn btn-secondary" id="printCvBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 6 2 18 2 18 9"></polyline>
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                         <rect x="6" y="14" width="12" height="8"></rect>
