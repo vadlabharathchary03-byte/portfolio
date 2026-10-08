@@ -1480,12 +1480,9 @@ function initBackgroundCanvas() {
     /* ---- Render profile bar ---- */
     function renderProfile(u) {
         const av = document.getElementById('githubAvatar');
-        if (av) { av.src = u.avatar_url; av.alt = u.login; }
-        const map = { ghRepos: u.public_repos, ghFollowers: u.followers, ghFollowing: u.following, ghGists: u.public_gists };
-        Object.entries(map).forEach(([id, val]) => {
-            const el = document.getElementById(id);
-            if (el) animateCount(el, val);
-        });
+        if (av) { av.src = u.avatar_url; av.alt = u.name || u.login || 'Vadla Bharath Chary'; }
+        const nameEl = document.getElementById('githubName');
+        if (nameEl && u.name) { nameEl.textContent = u.name; }
         const link = document.getElementById('ghProfileLink');
         if (link && u.html_url) link.href = u.html_url;
     }
