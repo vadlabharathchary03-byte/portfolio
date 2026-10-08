@@ -694,17 +694,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cvBtn.addEventListener('click', (e) => {
             e.preventDefault();
 
-            // 1. Direct download CV file immediately to visitor's computer
+            // Direct download CV file immediately to visitor's computer without opening any popup modal
             triggerDirectDownload();
-
-            // 2. Open CV immediately in a new tab for instant reading
-            openCvPreviewTab();
-
-            // 3. Open resume modal on portfolio page
-            if (resumeModal) {
-                resumeModal.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            }
         });
     }
 

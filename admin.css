@@ -582,17 +582,35 @@ html, body {
 }
 
 .dash-main-title {
-    font-family: var(--font-heading);
-    font-size: 1.9rem;
+    font-family: 'Outfit', 'Space Grotesk', var(--font-heading), sans-serif;
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--text-main);
-    letter-spacing: -0.5px;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    text-shadow: 0 4px 20px rgba(14, 165, 233, 0.08);
+}
+
+.dash-title-gradient {
+    background: linear-gradient(135deg, #0284c7 0%, #06b6d4 50%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    font-weight: 800;
 }
 
 .dash-main-sub {
-    font-size: 0.92rem;
-    color: var(--text-muted);
-    margin-top: 4px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.94rem;
+    color: #1e293b;
+    margin-top: 6px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .btn-refresh {
@@ -911,6 +929,9 @@ html, body {
     }
     .dash-metrics-grid {
         grid-template-columns: 1fr;
+    }
+    .dash-main-title {
+        font-size: 1.75rem;
     }
     .admin-main-content {
         padding: 24px 20px;
