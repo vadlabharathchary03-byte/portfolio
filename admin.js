@@ -583,7 +583,7 @@ function initAdminCanvas() {
 }
 
 // UI State Management
-document.addEventListener('DOMContentLoaded', () => {
+function initAdminApp() {
     initAdminCanvas();
 
     const loginLayout = document.getElementById('adminLoginLayout');
@@ -907,4 +907,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial load
     checkAuthState();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminApp);
+} else {
+    initAdminApp();
+}

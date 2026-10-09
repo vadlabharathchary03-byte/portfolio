@@ -61,18 +61,6 @@ body {
     position: relative;
 }
 
-/* ==================== Background Canvas ==================== */
-#bgCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.65;
-}
-
 /* ==================== Aurora Background Layers ==================== */
 .aurora-container {
     position: fixed;
@@ -83,7 +71,19 @@ body {
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    opacity: 0.3;
+    opacity: 0.35;
+}
+
+/* ==================== Background Canvas (Interactive 3D Shapes) ==================== */
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.92;
 }
 
 .aurora {
@@ -210,6 +210,7 @@ input, textarea {
 .section {
     padding: 100px 0;
     position: relative;
+    z-index: 2;
     scroll-margin-top: calc(var(--nav-height) + 10px);
 }
 
@@ -403,7 +404,39 @@ main {
 .nav-cta {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+}
+
+.btn-portal-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.2);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.btn-portal-header:hover {
+    background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+    transform: translateY(-1px);
+}
+
+.nav-link-portal {
+    color: #38bdf8 !important;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .hamburger {
@@ -447,7 +480,7 @@ main {
     padding-bottom: 60px;
     position: relative;
     overflow: visible;
-    z-index: 1;
+    z-index: 2;
 }
 
 .hero-grid {
@@ -1813,6 +1846,21 @@ main {
 }
 
 @media (max-width: 768px) {
+    #bgCanvas {
+        opacity: 0.96;
+    }
+    .aurora {
+        filter: blur(40px);
+        opacity: 0.22;
+    }
+    .aurora-1, .aurora-2 {
+        width: 320px;
+        height: 320px;
+    }
+    .aurora-3, .aurora-4 {
+        width: 250px;
+        height: 250px;
+    }
     .section {
         padding: 70px 0;
     }
@@ -1827,6 +1875,18 @@ main {
     }
     .hamburger {
         display: flex;
+    }
+    .nav-cta .nav-talk-btn {
+        display: none;
+    }
+    .nav-cta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-portal-header {
+        padding: 5px 11px;
+        font-size: 0.78rem;
     }
     .nav-menu {
         position: fixed;
@@ -1848,9 +1908,6 @@ main {
     }
     .nav-menu.open {
         right: 0;
-    }
-    .nav-cta {
-        display: none;
     }
     .about-stats {
         grid-template-columns: 1fr;

@@ -2,7 +2,7 @@
    Vadla Bharath Chary - Portfolio Interactive Scripts
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initPortfolioApp() {
     // --- Sticky Header & Scroll Effects ---
     const header = document.querySelector('.header');
     const backToTopBtn = document.getElementById('backToTop');
@@ -781,14 +781,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (heroPhotoWrapper) {
+        heroPhotoWrapper.style.cursor = 'pointer';
+        heroPhotoWrapper.addEventListener('click', navigateToAdmin);
+        heroPhotoWrapper.addEventListener('touchend', navigateToAdmin);
+    }
+
     if (heroPhotoImg) {
         heroPhotoImg.style.cursor = 'pointer';
         heroPhotoImg.addEventListener('click', navigateToAdmin);
+        heroPhotoImg.addEventListener('touchend', navigateToAdmin);
     }
 
     // --- Initialize Interactive Background Animation ---
     initBackgroundCanvas();
-});
+}
+
+// Ensure execution even if DOMContentLoaded already fired (mobile caching / fast load)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPortfolioApp);
+} else {
+    initPortfolioApp();
+}
 
 /**
  * Interactive Background Constellation & Particle Animation
@@ -807,39 +821,47 @@ function initBackgroundCanvas() {
     let animationFrameId = null;
     let mouse = { x: null, y: null, targetX: 0, targetY: 0, curX: 0, curY: 0 };
 
-    // 4 Vibrant 3D Color Palettes (Blue, Purple, Orange, Green)
+    // 5 Vibrant Light-Theme 3D Palettes (Tailored for high clarity on light backgrounds & mobile)
     const PALETTES = [
         {
             name: "blue",
             highlight: "#7dd3fc",
-            base: "#0ea5e9",
+            base: "#0284c7",
             dark: "#0369a1",
             shadow: "rgba(2, 132, 199, 0.28)",
-            glow: "rgba(14, 165, 233, 0.18)"
+            glow: "rgba(14, 165, 233, 0.22)"
         },
         {
             name: "purple",
-            highlight: "#d8b4fe",
-            base: "#a855f7",
-            dark: "#6b21a8",
-            shadow: "rgba(168, 85, 247, 0.26)",
-            glow: "rgba(168, 85, 247, 0.18)"
+            highlight: "#c4b5fd",
+            base: "#7c3aed",
+            dark: "#5b21b6",
+            shadow: "rgba(124, 58, 237, 0.26)",
+            glow: "rgba(139, 92, 246, 0.22)"
         },
         {
-            name: "orange",
-            highlight: "#fdba74",
-            base: "#f97316",
+            name: "amber",
+            highlight: "#fcd34d",
+            base: "#ea580c",
             dark: "#c2410c",
-            shadow: "rgba(249, 115, 22, 0.28)",
-            glow: "rgba(249, 115, 22, 0.18)"
+            shadow: "rgba(234, 88, 12, 0.28)",
+            glow: "rgba(249, 115, 22, 0.22)"
         },
         {
-            name: "green",
+            name: "emerald",
             highlight: "#6ee7b7",
-            base: "#10b981",
+            base: "#059669",
             dark: "#047857",
-            shadow: "rgba(16, 185, 129, 0.26)",
-            glow: "rgba(16, 185, 129, 0.18)"
+            shadow: "rgba(5, 150, 105, 0.26)",
+            glow: "rgba(16, 185, 129, 0.22)"
+        },
+        {
+            name: "rose",
+            highlight: "#fda4af",
+            base: "#e11d48",
+            dark: "#9f1239",
+            shadow: "rgba(225, 29, 72, 0.26)",
+            glow: "rgba(244, 63, 94, 0.22)"
         }
     ];
 
@@ -874,17 +896,17 @@ function initBackgroundCanvas() {
             this.baseY = Math.random() * height;
             this.y = this.baseY;
 
-            // Size & depth layer
+            // Size & depth layer (tuned for mobile readability)
             const isMobile = width < 768;
-            this.size = Math.random() * 24 + (isMobile ? 20 : 28);
+            this.size = Math.random() * 20 + (isMobile ? 22 : 28);
             this.depth = Math.random() * 0.6 + 0.7; // 0.7 to 1.3 for parallax depth
 
             // Velocities
-            this.vx = (Math.random() - 0.5) * 0.32;
-            this.vy = (Math.random() - 0.5) * 0.18;
+            this.vx = (Math.random() - 0.5) * (isMobile ? 0.42 : 0.32);
+            this.vy = (Math.random() - 0.5) * (isMobile ? 0.26 : 0.18);
 
             // Harmonic float
-            this.floatSpeed = Math.random() * 0.0018 + 0.001;
+            this.floatSpeed = Math.random() * 0.002 + 0.0012;
             this.floatAmp = Math.random() * 26 + 14;
             this.floatPhase = Math.random() * Math.PI * 2;
 
@@ -892,16 +914,17 @@ function initBackgroundCanvas() {
             this.rx = Math.random() * Math.PI * 2;
             this.ry = Math.random() * Math.PI * 2;
             this.rz = Math.random() * Math.PI * 2;
-            this.rsx = (Math.random() - 0.5) * 0.015;
-            this.rsy = (Math.random() - 0.5) * 0.018;
-            this.rsz = (Math.random() - 0.5) * 0.012;
+            this.rsx = (Math.random() - 0.5) * 0.016;
+            this.rsy = (Math.random() - 0.5) * 0.02;
+            this.rsz = (Math.random() - 0.5) * 0.014;
 
             // Mouse displacement offset with spring physics
             this.offsetX = 0;
             this.offsetY = 0;
             this.targetOffsetX = 0;
             this.targetOffsetY = 0;
-            this.opacity = Math.random() * 0.15 + 0.35;
+            // High visibility opacity: 0.65 to 0.88 on mobile, 0.52 to 0.75 on desktop
+            this.opacity = Math.random() * 0.22 + (isMobile ? 0.66 : 0.54);
         }
 
         update(time) {
@@ -1252,33 +1275,50 @@ function initBackgroundCanvas() {
 
     }
 
-        function createShapes() {
+    function createShapes() {
         shapes = [];
         const isMobile = width < 768;
-        const count = isMobile ? 10 : Math.min(20, Math.max(14, Math.floor((width * height) / 75000)));
+        const count = isMobile ? 14 : Math.min(22, Math.max(16, Math.floor((width * height) / 70000)));
         for (let i = 0; i < count; i++) {
             shapes.push(new Shape3D());
         }
     }
 
+    let lastWidth = window.innerWidth;
     function handleResize() {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+        // Prevent mobile scroll address-bar show/hide from recreating shapes constantly
+        const widthChanged = Math.abs(newWidth - lastWidth) > 10;
+
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        width = window.innerWidth;
-        height = window.innerHeight;
+        width = newWidth;
+        height = newHeight;
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
         canvas.style.width = width + "px";
         canvas.style.height = height + "px";
         ctx.scale(dpr, dpr);
-        createShapes();
+
+        if (widthChanged || shapes.length === 0) {
+            lastWidth = newWidth;
+            createShapes();
+        }
     }
 
     function render(currentTime) {
         ctx.clearRect(0, 0, width, height);
 
-        // Smooth mouse lerping
-        mouse.curX += (mouse.targetX - mouse.curX) * 0.05;
-        mouse.curY += (mouse.targetY - mouse.curY) * 0.05;
+        // Autonomous organic ambient sway so background stays dynamic even without user interaction
+        if (mouse.x === null && Math.abs(mouse.targetX) < 0.05) {
+            const autoSwayX = Math.sin(currentTime * 0.0007) * 0.35;
+            const autoSwayY = Math.cos(currentTime * 0.0005) * 0.25;
+            mouse.curX += (autoSwayX - mouse.curX) * 0.03;
+            mouse.curY += (autoSwayY - mouse.curY) * 0.03;
+        } else {
+            mouse.curX += (mouse.targetX - mouse.curX) * 0.05;
+            mouse.curY += (mouse.targetY - mouse.curY) * 0.05;
+        }
 
         // Sort by simulated depth for realistic layering
         shapes.sort((a, b) => a.depth - b.depth);
@@ -1311,13 +1351,19 @@ function initBackgroundCanvas() {
         mouse.targetY = 0;
     });
 
+    function updateTouch(touch) {
+        mouse.x = touch.clientX;
+        mouse.y = touch.clientY;
+        mouse.targetX = (touch.clientX / width - 0.5) * 2;
+        mouse.targetY = (touch.clientY / height - 0.5) * 2;
+    }
+
+    window.addEventListener("touchstart", (e) => {
+        if (e.touches.length > 0) updateTouch(e.touches[0]);
+    }, { passive: true });
+
     window.addEventListener("touchmove", (e) => {
-        if (e.touches.length > 0) {
-            mouse.x = e.touches[0].clientX;
-            mouse.y = e.touches[0].clientY;
-            mouse.targetX = (e.touches[0].clientX / width - 0.5) * 2;
-            mouse.targetY = (e.touches[0].clientY / height - 0.5) * 2;
-        }
+        if (e.touches.length > 0) updateTouch(e.touches[0]);
     }, { passive: true });
 
     window.addEventListener("touchend", () => {
@@ -1326,6 +1372,18 @@ function initBackgroundCanvas() {
         mouse.targetX = 0;
         mouse.targetY = 0;
     });
+
+    // Mobile Gyroscope Parallax
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener("deviceorientation", (e) => {
+            if (e.gamma !== null && e.beta !== null) {
+                const tiltX = Math.max(-1, Math.min(1, e.gamma / 30));
+                const tiltY = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+                mouse.targetX = tiltX;
+                mouse.targetY = tiltY;
+            }
+        }, { passive: true });
+    }
 
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
