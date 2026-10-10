@@ -716,10 +716,10 @@ function initAdminApp() {
     function addSampleInquiry() {
         const names = ['Kavya Reddy', 'Rohan Verma', 'Sarah Jenkins', 'Sai Karthik', 'Alex Rivera'];
         const emails = ['kavya.reddy@gmail.com', 'rohan.v@techcorp.io', 'sarah.j@designdrive.com', 'sai.karthik@startup.in', 'alex@riveramedia.com'];
-        const subjects = ['Front-End Collaboration', 'Website Redesign Project', 'Freelance React Developer', 'UI Consultation', 'Job Opportunity'];
+        const subjects = ['Full Stack Collaboration', 'Web App Development', 'Freelance Full Stack Developer', 'System Architecture Consultation', 'Job Opportunity'];
         const messages = [
-            'Hi Bharath, I came across your portfolio and was impressed by your clean design and animations. We are looking for a developer for our modern web portal. Let us know your availability!',
-            'Hello Vadla Bharath! We need a front-end specialist to build responsive dashboard components. Would love to collaborate with you on our upcoming project.',
+            'Hi Bharath, I came across your portfolio and was impressed by your clean full-stack design and animations. We are looking for a developer for our modern web portal. Let us know your availability!',
+            'Hello Vadla Bharath! We need a full stack specialist to build end-to-end features and responsive dashboard components. Would love to collaborate with you on our upcoming project.',
             'Hi Bharath! Fantastic portfolio with great attention to detail. Let us connect regarding a full-time or contract opportunity.'
         ];
 
