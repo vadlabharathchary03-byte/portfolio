@@ -169,6 +169,7 @@ html, body {
 .brand-text span {
     background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -563,6 +564,7 @@ html, body {
 .sidebar-brand-text span {
     background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
