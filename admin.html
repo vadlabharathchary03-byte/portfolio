@@ -31,7 +31,23 @@
                 <div class="login-brand text-center">
                     <h1 class="brand-text">Bharath<span>.dev</span></h1>
                     <p class="brand-sub">Management Portal</p>
-                    
+                </div>
+
+                <!-- Demo Credentials Helper & Inquiries Indicator -->
+                <div class="login-demo-box">
+                    <div class="login-demo-top">
+                        <div class="demo-info">
+                            <span class="demo-pill">DEMO LOGIN</span>
+                            <span class="demo-creds">User: <strong>admin</strong> &bull; Pass: <strong>admin123</strong></span>
+                        </div>
+                        <button type="button" class="btn-login-quickfill" id="loginQuickFillBtn" title="Auto-fill credentials">
+                            ⚡ Auto Fill
+                        </button>
+                    </div>
+                    <div class="login-live-indicator" id="loginLiveInquiriesIndicator">
+                        <span class="live-dot"></span>
+                        <span id="loginLiveStatusText">Checking client inquiries...</span>
+                    </div>
                 </div>
 
                 <!-- Form with Username and Password -->
@@ -144,7 +160,7 @@
                         <span class="sidebar-badge" id="sidebarBadgeCount">0</span>
                     </button>
 
-                    <button type="button" class="sidebar-nav-btn" id="sidebarAddSampleBtn">
+                    <button type="button" class="sidebar-nav-btn" id="sidebarAddSampleBtn" onclick="if(window.addSampleInquiry) window.addSampleInquiry();" title="Add a sample test inquiry">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>

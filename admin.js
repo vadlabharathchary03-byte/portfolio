@@ -33,24 +33,30 @@ function saveInquiries(list) {
     }
 }
 
+let renderDashboard = () => {};
+let updateLoginIndicator = () => {};
+
 function addInquiry(inquiry) {
     const list = getInquiries();
     list.unshift(inquiry);
     saveInquiries(list);
-    renderDashboard();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof updateLoginIndicator === 'function') updateLoginIndicator();
 }
 
 function deleteInquiry(id) {
     let list = getInquiries();
     list = list.filter(item => item.id !== id);
     saveInquiries(list);
-    renderDashboard();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof updateLoginIndicator === 'function') updateLoginIndicator();
 }
 
 function clearAllInquiries() {
     if (confirm('Are you sure you want to clear all inquiries from this browser?')) {
         saveInquiries([]);
-        renderDashboard();
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof updateLoginIndicator === 'function') updateLoginIndicator();
     }
 }
 
@@ -613,10 +619,25 @@ function initAdminApp() {
         }
     }
 
+    updateLoginIndicator = function() {
+        const textEl = document.getElementById('loginLiveStatusText');
+        if (!textEl) return;
+        const list = getInquiries();
+        if (list.length === 0) {
+            textEl.innerHTML = 'Live Sync Active &bull; <strong>0 inquiries</strong> recorded';
+        } else if (list.length === 1) {
+            textEl.innerHTML = '<strong style="color: #0284c7;">1 Client Inquiry</strong> recorded &bull; Sign in to view details';
+        } else {
+            textEl.innerHTML = `<strong style="color: #0284c7;">${list.length} Client Inquiries</strong> recorded &bull; Sign in to view details`;
+        }
+    };
+    window.updateLoginIndicator = updateLoginIndicator;
+
     function showLogin() {
         if (loginLayout) loginLayout.style.display = 'flex';
         if (dashboardLayout) dashboardLayout.style.display = 'none';
         if (loginError) loginError.style.display = 'none';
+        updateLoginIndicator();
         setTimeout(() => {
             const u = document.getElementById('adminUsername');
             if (u) u.focus();
@@ -744,6 +765,24 @@ function initAdminApp() {
         };
 
         addInquiry(sample);
+        showAdminToast(`✓ Test inquiry from ${sample.name} added!`);
+    }
+    window.addSampleInquiry = addSampleInquiry;
+
+    function showAdminToast(msg) {
+        let toast = document.getElementById('adminToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'adminToast';
+            toast.className = 'admin-toast';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2600);
     }
 
     // Export CSV Helper
@@ -777,7 +816,7 @@ function initAdminApp() {
     }
 
     // Render Dashboard UI
-    function renderDashboard() {
+    renderDashboard = function() {
         const container = document.getElementById('dashInquiriesContainer');
         const totalCountEl = document.getElementById('dashTotalCount');
         const latestTimeEl = document.getElementById('dashLatestTime');
@@ -905,8 +944,17 @@ function initAdminApp() {
         });
     }
 
+    // Cross-tab real-time sync with portfolio contact form
+    window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY_INQUIRIES) {
+            renderDashboard();
+            updateLoginIndicator();
+        }
+    });
+
     // Initial load
     checkAuthState();
+    updateLoginIndicator();
 }
 
 if (document.readyState === 'loading') {

@@ -185,6 +185,14 @@ function initPortfolioApp() {
         }
     }
 
+    // Cross-tab sync for inquiries
+    window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY_INQUIRIES) {
+            updatePortalBadge();
+            renderPortalDashboard();
+        }
+    });
+
     // Modal Visibility Controls
     const portalModal = document.getElementById('portalModal');
     const closePortalBtn = document.getElementById('closePortalModal');
